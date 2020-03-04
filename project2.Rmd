@@ -1,0 +1,112 @@
+---
+subtitle: "TMA4267 Linear statistical models spring 2020"
+title: "Compulsory exercise 2"
+author: "Silje Anfindsen and Magnus Wølneberg"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  # html_document
+  pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+ #import libraries
+library()
+```
+
+# Problem 1 : Diabetes progression
+
+## a)
+
+Interpretation of $\textbf{Summary(full)}$ in Figure 1:
+
+### 1)
+
+The column $\textbf{Estimate}$ has the formula $$ Y = -356.643 -0.035 \textbf{age} - 22.792 \textbf{sex} + 5.595 \textbf{bmi} + 1.115 \textbf{map} 1.082 \textbf{tc} + 0.739 \textbf{ldl} + 0.367 \textbf{hdl} + 6.540 \textbf{tch} + 157.176 \textbf{ltg} + 0.281 \textbf{glu} $$.
+
+$Y$ is the response \textbf{prog}, $-356.643$ is the intercept $\beta_0$, where our model crosses the y-axis, and the rest of the variables in the model are called the covariates, $\beta_i$ and can be interpreted as the slope of the linear model. 
+
+
+The column $\textbf{Std. Error}$ measures the average amount that the coefficient estimates vary from the response. is given by $SE = \frac{\sigma}{\sqrt{n}}$.
+
+The column $\textbf{t vallue}$ ???
+
+The column $\textbf{Pr(>|t|)}$ is the p value which tells us what the probability of observing a value at least as extreme as $\beta_i$. 
+
+
+### 2) 
+When all the covariates are zero, the expected response $Y$ is the intercept $\beta_0$.
+
+### 3)
+The estimated regression coeffisients for $\textbf{bmi}$ is positive, therefore and increasing bmi value for the pasient will contribute to an increasing respone, which in this case is the measurement of disease progression of diabetes after one year. This means that for a pasient with a high bmi value, progression of diabeted one year after baseline will be worse. 
+
+### 4) 
+
+The estimated error variance is denoted as the Residual Standard Error in the summary. The Residual Standard Error is the average amount that the response will deviate from the true regression line, and it is given by: $$ \sigma = \sqrt{\frac{\sum( \hat{y}-y)}{n-p}}$$ where $p$ is the number of degrees of freedom, and $n$ is number of observations. 
+
+
+### 5)
+The covariates within significance level $\alpha=0.05$ are sex, bmi, map and ltg. The null hypothesis is $H_0: \beta_{sex} = \beta_{bmi} = \beta_{map} = \beta_{ltg} = 0$ for all $i$, the alternative hypothesis is H1: at least one $ \neq 0$. 
+
+## b)
+
+In order to evaluate the fit of the full model we will check whether the assumptions of a linear model is satisfied. These are: 
+1. The expected value of $\epsilon_i$ is $0$: $E(\epsilon_i) = 0$.
+2. All $\epsilon_i$ have the same variance: $Var(\epsilon_i) = \sigma^2$.
+3. The $\epsilon_i$ are normally distributed.
+4. The $\epsilon_i$ are independent of each other.
+
+Looking at the Residual vs. Fitted plot there are no presence of a pattern between the residuals $e_i = y_i − \hat{y_i}$,
+and the predicted values $\hat{yi}$. This helps us check assumptions 1 and 2. Looking at the figure at the top we notice that there are no signs of patterns for any of the covariates in our model. The QQ-plot in the right bottom does not show any evidence against assumption 3.
+In conclusion we have no evidence against the model not satisfying a linear relationship between the response and the covariates. 
+
+The Multiple R-squared in Figure 1 can be interpreted as how well the model is fitting the actual data. The value is always defined in the interval between 0 and 1, where 1 indicates a good model fit. 
+
+## c)
+
+A reduced model can have better performance than a full model when the aim is prediction if any of the covariates of low significance are removed. Then we are left with a model consisting of covariates with a high correlation to the response variable. 
+
+Best subset model selection is a method for selecting subsets of predictors. For each possible combination of p predictors we fit a least squares regression model. Then we look at the resulting models in order to try to identify the best of them. To do this we define adjusted $R^2$ and BIC criteria. These are techniques that adjust the training error for the model size opposite to for example MSE (mean square error) which decreases as more variables are included in the model, or $R^2$ which increases in the same case. 
+
+In Figure 3 a best subset selection has been performed on our dataset. The function identifies the best model that contains a gicen number of predictors from 1 to 10 in this case. The best model is quantifies using RSS (residual sum of squares). 
+
+Now we want to choose a reduced regression model based on the results in Figure 3 and Figure 4. By observing Figure 3 we see that the BIC criteria has a minimal value for 5 predictors, and adjusted $R^2$ has a maximal value for 8 predictors. Further, we observe the plots in Figure 4 and find that 6 predictors gives both a small BIC value and a large adjusted $R^2$ value. The predictors in our reduced model is therefore: sex, bmi, map, tc, ldl and ltg from the results in figure 3. 
+
+
+```{r}
+ds <- read.csv("https://web.stanford.edu/~hastie/CASI_files/DATA/diabetes.csv", sep = ",")
+#apply(ds, 2, summary)
+reduced <- lm(prog ~ sex + bmi + map + tc + ldl + ltg, data = ds)
+summary(reduced)
+anova(reduced)
+```
+The reduced model is:
+$$ Y = -334.9019 - 21.5052 \textbf{sex} + 5.7040 \textbf{bmi} + 1.1260 \textbf{map} - 1.0391 \textbf{tc} + 0.8395 \textbf{ldl} + 168.5354 \textbf{ltg} $$.
+
+We will now compare the estimated regression parameters for the full and reduced model. The intercept has a dramatically smaller standard error in the reduced model. The same trend seems to follow for the other covariates. ???
+
+## d)
+
+?anova
+
+```{r}
+reduced_5 <- lm(prog~ sex + bmi + map + hdl + ltg, data=ds)
+full <- lm(prog ~., data=ds)
+anova(reduced_5)
+
+```
+
+# Problem 2 : Multiple testing
+
+```{r}
+pvalues <- scan("https://www.math.ntnu.no/emner/TMA4267/2018v/pvalues.txt")
+```
+
+## a)
+
+## b)
+
+The familywise error rate is the probability of making type 1 errors when performing hypothesis tests. 
