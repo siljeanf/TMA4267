@@ -9,104 +9,219 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,tidy=TRUE,message=FALSE,warning=FALSE,strip.white=TRUE,prompt=FALSE,
+                      cache=TRUE, size="scriptsize",fig.width=4, fig.height=3)
 ```
 
-```{r}
- #import libraries
-library()
+
+```{r,echo=FALSE}
+#install.packages("knitr") #probably already installed
+#install.packages("rmarkdown") #probably already installed
+#install.packages("ggplot2") #plotting with ggplot
+#install.packages("ggfortify")  
+#install.packages("MASS")  
+#install.packages("dplyr")  
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(ggfortify)
 ```
 
 # Problem 1 : Diabetes progression
 
 ## a)
 
-Interpretation of $\textbf{Summary(full)}$ in Figure 1:
+Interpretation of the print-out from $\textbf{summary(full)}$ in Figure 1:
 
 ### 1)
 
-The column $\textbf{Estimate}$ has the formula $$ Y = -356.643 -0.035 \textbf{age} - 22.792 \textbf{sex} + 5.595 \textbf{bmi} + 1.115 \textbf{map} 1.082 \textbf{tc} + 0.739 \textbf{ldl} + 0.367 \textbf{hdl} + 6.540 \textbf{tch} + 157.176 \textbf{ltg} + 0.281 \textbf{glu} $$.
+We will now explain the meaning of the quantities presented under "Coefficients" in the summary. The coefficients are the unknown parameters $\beta_0$, $\beta_1$,...$\beta_p$ in the linear model $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 +...+\beta_p X_p$.
 
-$Y$ is the response \textbf{prog}, $-356.643$ is the intercept $\beta_0$, where our model crosses the y-axis, and the rest of the variables in the model are called the covariates, $\beta_i$ and can be interpreted as the slope of the linear model. 
+The first column, $\textbf{Estimate}$, gives the estimates of the parameteres, the intercept $\beta_0$ and the slopes $\beta_i$. The parameters are usually calculated using the least squares approach, that is to choose $\beta_i$ such that the sum of squared residuals is minimized $\sum_{i=1}^{n}(y_i - \hat{y_i})^2$. We can interpret the estimates as the expected change in $Y$ for a one unit increase in the variable $X_i$. In this case a one unit change in \textbf{age} gives $-0.03529$ unit changes in \textbf{prog}. We can now find the formula for the full model,
 
+$$
+\begin{aligned}
+\textbf{prog} &= -356.643 -0.035 \textbf{age} - 22.792 \textbf{sex} + 5.595 \textbf{bmi} + 1.115 \textbf{map}\\
+&+1.082 \textbf{tc} + 0.739 \textbf{ldl} + 0.367 \textbf{hdl} + 6.540 \textbf{tch} + 157.176 \textbf{ltg} + 0.281 \textbf{glu} 
+\end{aligned}
+$$
 
-The column $\textbf{Std. Error}$ measures the average amount that the coefficient estimates vary from the response. is given by $SE = \frac{\sigma}{\sqrt{n}}$.
+The second column, $\textbf{Std. Error}$ is the standard deviation of an estimate, which in this case measures the average amount that the coefficient estimates vary from the response. In other words, how precisely the model estimates the coefficients unknown values. The standard error is always positive, $$SE = \frac{\sigma}{\sqrt{n}}$$.
 
-The column $\textbf{t vallue}$ ???
+The third column $\textbf{t vallue}$ is given by
+$$t = \frac{Estimate}{Std.Error} = \frac{\hat{\beta}}{SE(\hat{\beta})}$$. 
+A high t value indicate that we can reject the null hypothesis.
 
-The column $\textbf{Pr(>|t|)}$ is the p value which tells us what the probability of observing a value at least as extreme as $\beta_i$. 
+The last column $\textbf{Pr(>|t|)}$ inidicates the probability of observing a value equal or larger than t, also called the p value.
+The p value is helpful when we do a hypothesis test. A low p value allow us to reject the null hypothesis, which means that there is a relationship between the given parameter and the response variable in our model.
 
 
 ### 2) 
-When all the covariates are zero, the expected response $Y$ is the intercept $\beta_0$.
+The intercept,$\beta_0$ gives the measured response $Y$ when all the variables are set to null, $x_i = 0$, that means we do not consider any variables when calculating the response. 
 
 ### 3)
-The estimated regression coeffisients for $\textbf{bmi}$ is positive, therefore and increasing bmi value for the pasient will contribute to an increasing respone, which in this case is the measurement of disease progression of diabetes after one year. This means that for a pasient with a high bmi value, progression of diabeted one year after baseline will be worse. 
+The estimated regression coeffisients for $\textbf{bmi}$ is positive, therefore and increasing BMI value for the pasient will contribute to an increasing respone, which in this case is the measurement of disease progression of diabetes after one year. This means that for a pasient with a high BMI value, progression of diabeted one year after baseline will be worse. 
 
 ### 4) 
-
-The estimated error variance is denoted as the Residual Standard Error in the summary. The Residual Standard Error is the average amount that the response will deviate from the true regression line, and it is given by: $$ \sigma = \sqrt{\frac{\sum( \hat{y}-y)}{n-p}}$$ where $p$ is the number of degrees of freedom, and $n$ is number of observations. 
-
+The estimated error variance is denoted as the Residual Standard Error in the summary. The Residual Standard Error is the average amount that the response will deviate from the true regression line, and it is given by: $$ RSE = \sqrt{\frac{\sum( \hat{y}-y)}{n-p}}$$ where $p$ is the number of degrees of freedom, and $n$ is number of observations. 
 
 ### 5)
-The covariates within significance level $\alpha=0.05$ are sex, bmi, map and ltg. The null hypothesis is $H_0: \beta_{sex} = \beta_{bmi} = \beta_{map} = \beta_{ltg} = 0$ for all $i$, the alternative hypothesis is H1: at least one $ \neq 0$. 
+The covariates within the given significance level of $\alpha=0.05$ are \textbf{sex}, \textbf{bmi}, \textbf{map} and \textbf{ltg}. In order to determine whether there is a relationship between the response and the predictor we can check whether setting $\beta_i = 0$ affects the response or not.
+
+In order to test the significance for each of the covariates we perform a t test where the null hypothesis is,
+
+$H_0$ : $\beta_i = 0$,
+
+and the alternative hypothesis is,
+$H_1$: $\beta_j \neq 0$. 
+
+The p value is valid if $$P(p(\textbf{Y}) \leq \alpha) \leq \alpha$$ for all $0 \leq \alpha \leq 1$ whenever $H_0$ is true. This ensures that the probability for a type I error does not exceed $\alpha$.  
+
 
 ## b)
 
 In order to evaluate the fit of the full model we will check whether the assumptions of a linear model is satisfied. These are: 
-1. The expected value of $\epsilon_i$ is $0$: $E(\epsilon_i) = 0$.
-2. All $\epsilon_i$ have the same variance: $Var(\epsilon_i) = \sigma^2$.
+
+1. The expected value of $\epsilon_i$ is 0: $E(\epsilon_i)=0$.
+2. All $\epsilon_i$ have the same variance: $Var(\epsilon_i)=\sigma^2$.
 3. The $\epsilon_i$ are normally distributed.
 4. The $\epsilon_i$ are independent of each other.
 
-Looking at the Residual vs. Fitted plot there are no presence of a pattern between the residuals $e_i = y_i − \hat{y_i}$,
-and the predicted values $\hat{yi}$. This helps us check assumptions 1 and 2. Looking at the figure at the top we notice that there are no signs of patterns for any of the covariates in our model. The QQ-plot in the right bottom does not show any evidence against assumption 3.
-In conclusion we have no evidence against the model not satisfying a linear relationship between the response and the covariates. 
+Looking at the Residual vs. Fitted plot in Figure 2, there are no presence of a pattern between the residuals and the predicted values $\hat{y_i}$. This helps us validate assumptions 1 and 2. Looking at the top part of Figure 2, we notice that there are no signs of patterns between each of the covariates and the response variable. The QQ-plot in the right bottom of Figure 2 does not show any evidence against assumption 3. In conclusion we have no evidence against the model not satisfying a linear relationship between the response and the covariates. And we can therefore conclude that the linear regression seems to be significant for our data.
+
+Another method in order to test if the regression is significant is thorugh a hypothesis test, where the null hypothesis is
+
+$H_0$: $\beta_{age} = \beta_{sex} =...= \beta_{glu} = 0$,
+
+and the alternative hypothesis is
+
+$H1$: at least one $\beta_j$ is non zero.
 
 The Multiple R-squared in Figure 1 can be interpreted as how well the model is fitting the actual data. The value is always defined in the interval between 0 and 1, where 1 indicates a good model fit. 
+$$R^2 = 1- \frac{\sum_{i=1}^{n}\hat{e_i}^2}{\sum_{i=1}^n(y_i - \bar{y_i})^2 }$$
 
-## c)
+## c) 
 
-A reduced model can have better performance than a full model when the aim is prediction if any of the covariates of low significance are removed. Then we are left with a model consisting of covariates with a high correlation to the response variable. 
+A reduced model can have better performance than a full model when the aim is prediction if any of the covariates of low significance are removed. Then we are left with a model consisting of less covariates where each has a higher correlation to the response variable. 
 
 Best subset model selection is a method for selecting subsets of predictors. For each possible combination of p predictors we fit a least squares regression model. Then we look at the resulting models in order to try to identify the best of them. To do this we define adjusted $R^2$ and BIC criteria. These are techniques that adjust the training error for the model size opposite to for example MSE (mean square error) which decreases as more variables are included in the model, or $R^2$ which increases in the same case. 
 
-In Figure 3 a best subset selection has been performed on our dataset. The function identifies the best model that contains a gicen number of predictors from 1 to 10 in this case. The best model is quantifies using RSS (residual sum of squares). 
+In Figure 3a best subset selection has been performed on our dataset. The function identifies the best model that contains a given number of predictors from 1 to 10 in this case. The best model is quantifies using RSS (residual sum of squares). 
 
 Now we want to choose a reduced regression model based on the results in Figure 3 and Figure 4. By observing Figure 3 we see that the BIC criteria has a minimal value for 5 predictors, and adjusted $R^2$ has a maximal value for 8 predictors. Further, we observe the plots in Figure 4 and find that 6 predictors gives both a small BIC value and a large adjusted $R^2$ value. The predictors in our reduced model is therefore: sex, bmi, map, tc, ldl and ltg from the results in figure 3. 
 
-
 ```{r}
 ds <- read.csv("https://web.stanford.edu/~hastie/CASI_files/DATA/diabetes.csv", sep = ",")
-#apply(ds, 2, summary)
-reduced <- lm(prog ~ sex + bmi + map + tc + ldl + ltg, data = ds)
-summary(reduced)
-anova(reduced)
-```
-The reduced model is:
-$$ Y = -334.9019 - 21.5052 \textbf{sex} + 5.7040 \textbf{bmi} + 1.1260 \textbf{map} - 1.0391 \textbf{tc} + 0.8395 \textbf{ldl} + 168.5354 \textbf{ltg} $$.
 
-We will now compare the estimated regression parameters for the full and reduced model. The intercept has a dramatically smaller standard error in the reduced model. The same trend seems to follow for the other covariates. ???
+#fit the reduced model
+reduced_6 <- lm(prog ~ sex + bmi + map + tc + ldl + ltg, data = ds)
+
+summary(reduced_6)
+```
+
+The reduced model is:
+$$ Y = -334.9019 - 21.5052 \textbf{sex} + 5.7040 \textbf{bmi} + 1.1260 \textbf{map} - 1.0391 \textbf{tc} + 0.8395 \textbf{ldl} + 168.5354 \textbf{ltg} $$
+
+We will now compare the estimated regression parameters for the full and reduced model. The t value is a measure of how many standard deviations our coefficent estimate is away from zero. When the parameter is far away from zero we can reject $H_0$, and conclude that there is a linear relationship between the parameter and the response. We observe that the t values for the reduced model are higher for all the chosen covariates compared to the full model. This means that the covariates are further away from zero, and the chance of rejecting the null hypothesis for the reduced model is higher. 
+
+We observe for the estimation of the regression parameters that some have a higher value for the reduced model while others does not.
+
+//burde vi hatt noe om regression parameters her? 
 
 ## d)
 
-?anova
+We will now perform a hypothesis test for a new reduced model with the five covariates: \textbf{sex}, \textbf{bmi}, \textbf{map}, \textbf{hdl}, \textbf{ltg} and the intercept. 
 
 ```{r}
 reduced_5 <- lm(prog~ sex + bmi + map + hdl + ltg, data=ds)
 full <- lm(prog ~., data=ds)
-anova(reduced_5)
+
+
 
 ```
 
-# Problem 2 : Multiple testing
+The F-statistic is a good indicator of whether there is a relationship between our predictor and the response variables. A higher value gives a better reason for rejecting the null hypothesis.
 
-```{r}
+
+# Problem 2
+#2a)
+
+```{r, eval=TRUE, echo=TRUE}
 pvalues <- scan("https://www.math.ntnu.no/emner/TMA4267/2018v/pvalues.txt")
+
+true <- pvalues[1:900]
+false <- pvalues[901:1000]
+i <- 1
+
+while (i <= length(true)){
+  if (true[i] < (0.05)){
+    true <- true[-i]
+  }
+  else{
+    i <- i+1
+  }
+}
+i <- 1
+while (i <= length(false)){
+  if (false[i] < (0.05)){
+    false <- false[-i]
+  }
+  else{
+    i <- i+1
+  }
+}
+cat("Number of rejections", 1000 - (length(true) + length(false)))
+
+cat("\nAmount of type I errors", 900-length(true))
+
+cat("\nAmount of type II errors", length(false))
 ```
 
 ## a)
+We find that there is $155$ rejections of the nullhypothesis. A false positive finding (type I - error) is when you reject a null-hypothesis that is actually true. We do not know the number of false positive findings, but the probability of a positive finding with significance value $0.05$ is between $23\%$ and $50\%$. 
 
-## b)
+## b) 
+The familywise error rate, FWER, is the probability of finding at least one false positivie finding($H_0$ is rejected, but $H_0$ is true.). To control the FWER at level $0.05$ mean that you have the control of all overall type I error rate under any combination of true and false hypothesis tests. The Bonferroni method use $\alpha_{loc} = \frac{\alpha}{m}$ where $m$ is the total number of tests. In our problem $m = 1000$ and $\alpha_{loc} = 5 * 10^{-5}$. We apply the Bonferroni method. 
 
-The familywise error rate is the probability of making type 1 errors when performing hypothesis tests. 
+```{r, eval=TRUE, echo=TRUE}
+
+true1 <- pvalues[1:900]
+false1 <- pvalues[901:1000]
+i <- 1
+
+while (i <= length(true1)){
+  if (true1[i] < (5 * 10^(-5))){
+    true1 <- true1[-i]
+  }
+  else{
+    i <- i+1
+  }
+}
+
+i <- 1
+while (i <= length(false1)){
+  if (false1[i] < (5 * 10**(-5))){
+    false1 <- false1[-i]
+  }
+  else{
+    i <- i+1
+  }
+}
+cat("Number of rejections", 1000 - (length(true1) + length(false1)))
+cat("\nAmount of type I errors with Bonferroni", 900-length(true1))
+cat("\nAmount of type II errors with Bonferroni", length(false1))
+```
+After applying the Bonferroni method the number of rejections is lowered from $155$ to $50$. 
+
+## c)
+
+We split the test in the way described in the exercise and calculate the type I and II errors. 
+```{r}
+smoke <- matrix(c(155, 50, 55, 0, 0, 50),ncol=3,nrow=2)
+colnames(smoke) <- c("Rejections","Type I ","Type II")
+rownames(smoke) <- c("Original","With Bonferroni")
+smoke <- as.table(smoke)
+smoke
+```
+We can know observe that the bonferroni reduces the type I errors, but the type II errors increases. 
+
