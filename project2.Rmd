@@ -140,11 +140,9 @@ model_full <- lm(prog ~., data=ds)
 anova(model_reduced, model_full)
 ```
 
-From the code above we observe that the p value for the test is $p = 0.1523$ and $F = 1.6239$. The funciton above tests whether the removed covariates in the reduced model are zero ($H_0$). If so, including these covariates in our reduced model would probably be a mistake. We observe that the p value is greater than the usual significance level of $0.05$. This indicates that the null hypothesis is true, which means that we should choose the reduced model that excludes the covariates in $H_0$. 
+From the code above we observe that the p value for the test is $p = 0.1523$ and $F = 1.6239$. The function above tests whether the removed covariates in the reduced model are zero ($H_0$). If so, including these covariates in our reduced model would probably be a mistake. We observe that the p value is greater than the usual significance level of $0.05$. This indicates that the null hypothesis is true, which means that we should choose the reduced model that excludes the covariates in $H_0$. 
 
 We can also look at the F-statistic which is a good indicator of whether there is a relationship between our predictors and the response variable. A higher value of F gives a better reason for rejecting the null hypothesis. As the F statistics has a value close to zero, this comfirms the choice of approving $H_0$ and concluding with the reduced model as a better model compared to the full model. 
-
-
 
 
 # Problem 2 : Multiple testing
