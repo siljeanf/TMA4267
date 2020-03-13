@@ -133,34 +133,47 @@ We observe for the estimation of the regression parameters that some have a high
 We will now perform a hypothesis test for a new reduced model with the five covariates: \textbf{sex}, \textbf{bmi}, \textbf{map}, \textbf{hdl}, \textbf{ltg} and the intercept. 
 
 ```{r}
-reduced_5 <- lm(prog~ sex + bmi + map + hdl + ltg, data=ds)
-full <- lm(prog ~., data=ds)
+#create linear models with a set of covariates
+model_reduced <- lm(prog~ sex + bmi + map + ltg + hdl, data=ds)
+model_full <- lm(prog ~., data=ds)
 
-
-
+#perform hypothesis test for the two models with H0 as defined in problem
+anova(model_reduced, model_full)
 ```
 
-The F-statistic is a good indicator of whether there is a relationship between our predictor and the response variables. A higher value gives a better reason for rejecting the null hypothesis.
+From the code above we observe that the p value for the test is $ p = 0.1523$ and $F = 1.6239$. The funciton above tests whether the removed covariates in the reduced model are zero ($H_0$). If so, including these covariates in our reduced model would probably be a mistake. We observe that the p value is greater than the usual significance level of $0.05$. This indicates that the null hypothesis is true, which means that we should choose the reduced model that excludes the covariates in $H_0$. 
+
+We can also look at the F-statistic which is a good indicator of whether there is a relationship between our predictors and the response variable. A higher value of F gives a better reason for rejecting the null hypothesis. As the F statistics has a value close to zero, this comfirms the choice of approving $H_0$ and concluding with the reduced model as a better model compared to the full model. 
 
 
-# Problem 2
-#2a)
+
+
+# Problem 2 : Multiple testing
+
+Let us start with creating the code to analyze the given data set of p-values. 
 
 ```{r, eval=TRUE, echo=TRUE}
+#loading data
 pvalues <- scan("https://www.math.ntnu.no/emner/TMA4267/2018v/pvalues.txt")
 
+#split data set into positive and negative findings from 2c)
 true <- pvalues[1:900]
 false <- pvalues[901:1000]
+
+#initilize steps for true findings
 i <- 1
 
+#remove all findings smaller than significance level
 while (i <= length(true)){
-  if (true[i] < (0.05)){
+  if (true[i] < (0.05)){ 
     true <- true[-i]
   }
   else{
     i <- i+1
   }
 }
+
+#initilize i again for false findings
 i <- 1
 while (i <= length(false)){
   if (false[i] < (0.05)){
@@ -170,6 +183,7 @@ while (i <= length(false)){
     i <- i+1
   }
 }
+
 cat("Number of rejections", 1000 - (length(true) + length(false)))
 
 cat("\nAmount of type I errors", 900-length(true))
@@ -178,10 +192,10 @@ cat("\nAmount of type II errors", length(false))
 ```
 
 ## a)
-We find that there is $155$ rejections of the nullhypothesis. A false positive finding (type I - error) is when you reject a null-hypothesis that is actually true. We do not know the number of false positive findings, but the probability of a positive finding with significance value $0.05$ is between $23\%$ and $50\%$. 
+We find that there is $155$ rejections of the null-hypothesis $H_0$. A false positive finding (type I error) is when $H_0$ is rejected when it is actually true. We do not know the number of false positive findings, but the probability of at least one false positive finding with significance value $0.05$ is between $23\%$ and $50\%$. 
 
 ## b) 
-The familywise error rate, FWER, is the probability of finding at least one false positivie finding($H_0$ is rejected, but $H_0$ is true.). To control the FWER at level $0.05$ mean that you have the control of all overall type I error rate under any combination of true and false hypothesis tests. The Bonferroni method use $\alpha_{loc} = \frac{\alpha}{m}$ where $m$ is the total number of tests. In our problem $m = 1000$ and $\alpha_{loc} = 5 * 10^{-5}$. We apply the Bonferroni method. 
+The familywise error rate, FWER, is the probability of finding at least one false positivie finding. To control the FWER at level $0.05$ mean that you have the control of all overall type I error rate under any combination of true and false hypothesis tests. The Bonferroni method use $$\alpha_{loc} = \frac{\alpha}{m}$$ where $m$ is the total number of tests. In our problem $m = 1000$ which gives $\alpha_{loc} = 5 * 10^{-5}$. We apply the Bonferroni method. 
 
 ```{r, eval=TRUE, echo=TRUE}
 
@@ -211,11 +225,13 @@ cat("Number of rejections", 1000 - (length(true1) + length(false1)))
 cat("\nAmount of type I errors with Bonferroni", 900-length(true1))
 cat("\nAmount of type II errors with Bonferroni", length(false1))
 ```
+
 After applying the Bonferroni method the number of rejections is lowered from $155$ to $50$. 
 
 ## c)
 
 We split the test in the way described in the exercise and calculate the type I and II errors. 
+
 ```{r}
 smoke <- matrix(c(155, 50, 55, 0, 0, 50),ncol=3,nrow=2)
 colnames(smoke) <- c("Rejections","Type I ","Type II")
@@ -223,5 +239,6 @@ rownames(smoke) <- c("Original","With Bonferroni")
 smoke <- as.table(smoke)
 smoke
 ```
-We can know observe that the bonferroni reduces the type I errors, but the type II errors increases. 
+
+We can know observe that the Bonferroni reduces the type I errors, but the type II errors increases. 
 
