@@ -46,10 +46,10 @@ $$
 \end{aligned}
 $$
 
-The second column, $\textbf{Std. Error}$ is the standard deviation of an estimate, which in this case measures the average amount that the coefficient estimates vary from the response. In other words, how precisely the model estimates the coefficients unknown values. The standard error is always positive, $$SE = \frac{\sigma}{\sqrt{n}}$$.
+The second column, $\textbf{Std. Error}$ is the standard deviation of an estimate, which in this case measures the average amount that the coefficient estimates vary from the response. In other words, how precisely the model estimates the coefficients unknown values. The standard error is $$SE = \frac{\sigma}{\sqrt{n}}$$
 
 The third column $\textbf{t vallue}$ is given by
-$$t = \frac{Estimate}{Std.Error} = \frac{\hat{\beta}}{SE(\hat{\beta})}$$. 
+$$t = \frac{Estimate}{Std.Error} = \frac{\hat{\beta}}{SE(\hat{\beta})}$$ 
 A high t value indicate that we can reject the null hypothesis.
 
 The last column $\textbf{Pr(>|t|)}$ inidicates the probability of observing a value equal or larger than t, also called the p value.
@@ -57,23 +57,26 @@ The p value is helpful when we do a hypothesis test. A low p value allow us to r
 
 
 ### 2) 
-The intercept,$\beta_0$ gives the measured response $Y$ when all the variables are set to null, $x_i = 0$, that means we do not consider any variables when calculating the response. 
+The intercept, $\beta_0$ gives the measured response $Y$ when all the variables are set to null, $x_i = 0$, that means we do not consider any variables when calculating the response. 
 
 ### 3)
-The estimated regression coeffisients for $\textbf{bmi}$ is positive, therefore and increasing BMI value for the pasient will contribute to an increasing respone, which in this case is the measurement of disease progression of diabetes after one year. This means that for a pasient with a high BMI value, progression of diabeted one year after baseline will be worse. 
+The estimated regression coeffisients for $\textbf{bmi}$ is positive, therefore and increasing BMI value for the patient will contribute to an increasing response, which in this case is the measurement of disease progression of diabetes after one year. This means that for a patient with a high BMI value, progression of diabetes one year after baseline will be worse. 
 
 ### 4) 
 The estimated error variance is denoted as the Residual Standard Error in the summary. The Residual Standard Error is the average amount that the response will deviate from the true regression line, and it is given by: $$ RSE = \sqrt{\frac{\sum( \hat{y}-y)}{n-p}}$$ where $p$ is the number of degrees of freedom, and $n$ is number of observations. 
 
 ### 5)
-The covariates within the given significance level of $\alpha=0.05$ are \textbf{sex}, \textbf{bmi}, \textbf{map} and \textbf{ltg}. In order to determine whether there is a relationship between the response and the predictor we can check whether setting $\beta_i = 0$ affects the response or not.
+The covariates within the given significance level of $\alpha=0.05$ are \textbf{sex}, \textbf{bmi}, \textbf{map} and \textbf{ltg}. In order to determine whether there is a relationship between the response and each of the predictors, we can check if setting $\beta_i = 0$ affects the response or not.
 
 In order to test the significance for each of the covariates we perform a t test where the null hypothesis is,
 
 $H_0$ : $\beta_i = 0$,
 
 and the alternative hypothesis is,
-$H_1$: $\beta_j \neq 0$. 
+
+$H_1$: $\beta_i \neq 0$, 
+
+where $i = \textbf{age}, \textbf{sex},...,\textbf{glu}$.
 
 The p value is valid if $$P(p(\textbf{Y}) \leq \alpha) \leq \alpha$$ for all $0 \leq \alpha \leq 1$ whenever $H_0$ is true. This ensures that the probability for a type I error does not exceed $\alpha$.  
 
@@ -89,13 +92,13 @@ In order to evaluate the fit of the full model we will check whether the assumpt
 
 Looking at the Residual vs. Fitted plot in Figure 2, there are no presence of a pattern between the residuals and the predicted values $\hat{y_i}$. This helps us validate assumptions 1 and 2. Looking at the top part of Figure 2, we notice that there are no signs of patterns between each of the covariates and the response variable. The QQ-plot in the right bottom of Figure 2 does not show any evidence against assumption 3. In conclusion we have no evidence against the model not satisfying a linear relationship between the response and the covariates. And we can therefore conclude that the linear regression seems to be significant for our data.
 
-Another method in order to test if the regression is significant is thorugh a hypothesis test, where the null hypothesis is
+Another method in order to test if the regression is significant is through a hypothesis test, where the nullhypothesis is
 
 $H_0$: $\beta_{age} = \beta_{sex} =...= \beta_{glu} = 0$,
 
 and the alternative hypothesis is
 
-$H1$: at least one $\beta_j$ is non zero.
+$H_1$: at least one $\beta_j$ is non zero.
 
 The Multiple R-squared in Figure 1 can be interpreted as how well the model is fitting the actual data. The value is always defined in the interval between 0 and 1, where 1 indicates a good model fit. 
 $$R^2 = 1- \frac{\sum_{i=1}^{n}\hat{e_i}^2}{\sum_{i=1}^n(y_i - \bar{y_i})^2 }$$
@@ -124,10 +127,6 @@ $$ Y = -334.9019 - 21.5052 \textbf{sex} + 5.7040 \textbf{bmi} + 1.1260 \textbf{m
 
 We will now compare the estimated regression parameters for the full and reduced model. The t value is a measure of how many standard deviations our coefficent estimate is away from zero. When the parameter is far away from zero we can reject $H_0$, and conclude that there is a linear relationship between the parameter and the response. We observe that the t values for the reduced model are higher for all the chosen covariates compared to the full model. This means that the covariates are further away from zero, and the chance of rejecting the null hypothesis for the reduced model is higher. 
 
-We observe for the estimation of the regression parameters that some have a higher value for the reduced model while others does not.
-
-//burde vi hatt noe om regression parameters her? 
-
 ## d)
 
 We will now perform a hypothesis test for a new reduced model with the five covariates: \textbf{sex}, \textbf{bmi}, \textbf{map}, \textbf{hdl}, \textbf{ltg} and the intercept. 
@@ -141,7 +140,7 @@ model_full <- lm(prog ~., data=ds)
 anova(model_reduced, model_full)
 ```
 
-From the code above we observe that the p value for the test is $ p = 0.1523$ and $F = 1.6239$. The funciton above tests whether the removed covariates in the reduced model are zero ($H_0$). If so, including these covariates in our reduced model would probably be a mistake. We observe that the p value is greater than the usual significance level of $0.05$. This indicates that the null hypothesis is true, which means that we should choose the reduced model that excludes the covariates in $H_0$. 
+From the code above we observe that the p value for the test is $p = 0.1523$ and $F = 1.6239$. The funciton above tests whether the removed covariates in the reduced model are zero ($H_0$). If so, including these covariates in our reduced model would probably be a mistake. We observe that the p value is greater than the usual significance level of $0.05$. This indicates that the null hypothesis is true, which means that we should choose the reduced model that excludes the covariates in $H_0$. 
 
 We can also look at the F-statistic which is a good indicator of whether there is a relationship between our predictors and the response variable. A higher value of F gives a better reason for rejecting the null hypothesis. As the F statistics has a value close to zero, this comfirms the choice of approving $H_0$ and concluding with the reduced model as a better model compared to the full model. 
 
